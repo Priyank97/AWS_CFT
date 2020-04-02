@@ -14,7 +14,7 @@ environment{
 def setVariable(){
   if(env.BRANCH_NAME == 'master') {
     env.AWS_ACCOUNT = '670931091519'
-    env.STAGE = 'feature'
+    env.STAGE = 'master'
   }
 }
 
