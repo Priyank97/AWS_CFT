@@ -1,9 +1,46 @@
-pipeline {
-    stages {
-        stage('Submit Stack') {
-            steps {
-            sh "aws cloudformation create-stack --stack-name MyStack --template-body file://cft_template.json --region 'us-east-2'"
-              }
-             }
+AWS_REGION   = 'us-east-2'
+AWS_ACCOUNT  = '670931091519'
+AWS_ROLE     = 'external-jenkins-access'
+PROJECT_NAME = 'smart-wealth-sanity-test'
+
+environment{
+    AWS_ACCOUNT  = '670931091519'
+    STAGE = 'master'
+}
+
+/*
+* This method will set  AWS account  and stage
+*/
+def setVariable(){
+  if(env.BRANCH_NAME == 'master') {
+    env.AWS_ACCOUNT = '670931091519'
+    env.STAGE = 'feature'
+  }
+}
+
+
+
+def runscript(){
+  if(env.BRANCH_NAME == 'master'){
+            withAWS(region: AWS_REGION, role: AWS_ROLE, roleAccount: '670931091519') {
+                              sh 'aws cloudformation create-stack --stack-name MyStack --template-body cft_template.json --region "us-east-2"'
             }
-            }
+  }
+
+}
+
+pipeline{
+  agent any
+
+  stages {
+    
+    stage('Submit Stack') {
+          steps {
+        script {
+        setVariable()
+        runscript()
+           }
+      }
+    }
+    }
+}
